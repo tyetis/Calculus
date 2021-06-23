@@ -10,11 +10,14 @@ namespace Calculus
     {
         static void Main(string[] args)
         {
-            Expression exp = Parser.Parse("a-(-5+6^i)");
+            string input = "(2*a)/(1*b)";
+            Expression exp = Parser.Parse(input);
 
             exp = exp.Simplify();
             string result = exp.Render();
-            Console.WriteLine(result);
+            Console.WriteLine($"Input  = {input}");
+            Console.WriteLine($"Result = {result}");
+            Console.WriteLine();
             Console.Read();
         }
     }

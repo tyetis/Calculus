@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.960
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30717.126
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Calculus", "Calculus.csproj", "{7E073D54-F41D-442E-A215-68C832058FB1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Calculus.Test", "..\Calculus.Test\Calculus.Test.csproj", "{FA5DA7FF-070A-4F64-9EF8-A4F84EFC10CB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,19 +17,15 @@ Global
 		{7E073D54-F41D-442E-A215-68C832058FB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7E073D54-F41D-442E-A215-68C832058FB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7E073D54-F41D-442E-A215-68C832058FB1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FA5DA7FF-070A-4F64-9EF8-A4F84EFC10CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA5DA7FF-070A-4F64-9EF8-A4F84EFC10CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA5DA7FF-070A-4F64-9EF8-A4F84EFC10CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FA5DA7FF-070A-4F64-9EF8-A4F84EFC10CB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E9395FC9-9F81-44D5-807E-900AF1F8AF45}
-	EndGlobalSection
-	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 2
-		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
-		SccTeamFoundationServer = https://dev.azure.com/tayyipyetis
-		SccProjectUniqueName0 = Calculus.csproj
-		SccLocalPath0 = .
-		SccLocalPath1 = .
 	EndGlobalSection
 EndGlobal

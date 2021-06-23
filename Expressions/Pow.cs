@@ -19,7 +19,7 @@ namespace Calculus
 
         public override string Render()
         {
-            return string.Format("{0}^{1}", _baseExp.Render(), _powExp.Render());
+            return string.Format("{0}{1}^{2}", (IsPositive ? "" : "-"), _baseExp.Render(), _powExp.Render());
         }
         public override Expression Simplify()
         {
@@ -43,6 +43,12 @@ namespace Calculus
             p1.Items.Add(this);
             p1.Items.Add(exp);
             return p1;
+        }
+        public override bool IsEqual(Expression exp)
+        {
+            if (exp.IsSymbol())
+                return Render() == exp.Render();
+            else return false;
         }
     }
 }

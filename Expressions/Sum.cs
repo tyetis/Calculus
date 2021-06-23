@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,7 +9,6 @@ namespace Calculus
 {
     public class Sum : Expression
     {
-        public bool IsPositive { get; set; }
         public override Expression Simplify()
         {
             foreach (Expression e in Items.ToList())
@@ -35,17 +35,33 @@ namespace Calculus
             }
 
             Expression agg = Items.Aggregate((i, e) => i + e);
-            if (agg.IsNumber())
+            if (agg.IsNumber() || agg.IsProduct())
                 return agg;
-            else if(agg.IsSum())
+            else if (agg.IsSum())
                 this.Items = agg.Items;
 
             return this;
         }
         protected override Expression Add(Expression exp)
         {
-            if(exp.IsSum() || exp.IsProduct())
+            if(exp.IsSum())
+            {
                 Items.AddRange(exp.Items);
+                return this.Simplify();
+            }
+            else if (exp.IsNumber() && Extensions.HasNumber(this, out int index)) // Product bir sayı ile çarpılıyorsa
+                Items[index] = Items[index] + exp;
+            else if (exp.IsSymbol())
+            {
+                for(int i = 0; i < Items.Count; i++)
+                {
+                    if (Items[i].IsProduct() 
+                        && Items[i].ContainItem(exp)
+                        || Items[i] == exp)
+                    { Items[i] = Items[i] + exp; return this; }
+                }
+                Items.Add(exp);
+            }
             else
                 Items.Add(exp);
             return this;
@@ -59,7 +75,16 @@ namespace Calculus
         }
         public override string Render()
         {
-            return string.Format("{0}({1})", (IsPositive ? "" : "-"), string.Join("+", Items.Select(n => n.Render())));
+            var str = string.Join("", Items.Select((n, i) => (n.IsPositive && i > 0 ? "+" : "") + n.Render()));
+            return string.Format("{0}({1})", (IsPositive ? "" : "-"), str);
+        }
+        public override bool IsEqual(Expression exp)
+        {
+            if(exp.IsSum())
+            {
+                return Items.All(n => exp.Items.Any(e => e == n)) && Items.Count == exp.Items.Count;
+            }
+            return false;
         }
     }
 }

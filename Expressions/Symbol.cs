@@ -9,16 +9,15 @@ namespace Calculus
     public class Symbol : Expression
     {
         private string _name { get; set; }
-        private bool _isPositive { get; set; }
-        public Symbol(string Name, bool IsPositive = true)
+        public Symbol(string Name, bool isPositive = true)
         {
             _name = Name;
-            _isPositive = IsPositive;
+            IsPositive = isPositive;
         }
 
         public override string Render()
         {
-            return _name;
+            return string.Format("{0}{1}", (IsPositive ? "" : "-"), _name);
         }
         public override Expression Simplify()
         {
@@ -26,10 +25,20 @@ namespace Calculus
         }
         protected override Expression Add(Expression exp)
         {
-            Sum s1 = new Sum();
-            s1.Items.Add(this);
-            s1.Items.Add(exp);
-            return s1;
+            if (this == exp)
+            {
+                Product p1 = new Product();
+                p1.Items.Add(new Number(2));
+                p1.Items.Add(this);
+                return p1;
+            }
+            else
+            {
+                Sum s1 = new Sum();
+                s1.Items.Add(this);
+                s1.Items.Add(exp);
+                return s1;
+            }
         }
         protected override Expression Multiply(Expression exp)
         {
@@ -37,6 +46,12 @@ namespace Calculus
             s1.Items.Add(this);
             s1.Items.Add(exp);
             return s1;
+        }
+        public override bool IsEqual(Expression exp)
+        {
+            if (exp.IsSymbol())
+                return Render() == exp.Render();
+            else return false;
         }
     }
 }

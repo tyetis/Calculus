@@ -11,7 +11,7 @@ namespace Calculus
     {
         public static Expression Parse(string Expression, List<string> parantesis = null)
         {
-            bool IsPositiveFlag = true;
+            bool IsPositiveFlag = !Expression.StartsWith("-");
             if (parantesis == null) parantesis = new List<string>();
 
             if (Regex.IsMatch(Expression, @"^[+-]?\{(\d+)\}$"))
@@ -33,6 +33,7 @@ namespace Calculus
             if (mc_symbol.Count > 0)
             {
                 Symbol sym = new Symbol(mc_symbol[0].Groups[1].Value, !mc_symbol[0].Value.StartsWith("-"));
+                sym.IsPositive = IsPositiveFlag;
                 return sym;
             }
 
@@ -60,6 +61,7 @@ namespace Calculus
             if (mc_product.Count > 1)
             {
                 Product p = new Product();
+                p.IsPositive = IsPositiveFlag;
                 for (int i = 0; i < mc_product.Count; i++)
                 {
                     p.Items.Add(Parse(mc_product[i].Groups[1].Value, parantesis));
@@ -71,6 +73,7 @@ namespace Calculus
             if (m_rational.Groups.Count > 1)
             {
                 Rational r = new Rational(Parse(m_rational.Groups[1].Value, parantesis), Parse(m_rational.Groups[2].Value, parantesis));
+                r.IsPositive = IsPositiveFlag;
                 return r;
             }
 
@@ -78,6 +81,7 @@ namespace Calculus
             if (m_pow.Groups.Count > 1)
             {
                 Pow p = new Pow(Parse(m_pow.Groups[1].Value, parantesis), Parse(m_pow.Groups[2].Value, parantesis));
+                p.IsPositive = IsPositiveFlag;
                 return p;
             }
 

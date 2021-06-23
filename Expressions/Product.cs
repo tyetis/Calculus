@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,7 +11,7 @@ namespace Calculus
     {
         public override string Render()
         {
-            return string.Format("{0}", string.Join("*", Items.Select(n => n.Render())));
+            return string.Format("{0}{1}", (IsPositive ? "" : "-") ,string.Join("*", Items.Select(n => n.Render())));
         }
         public override Expression Simplify()
         {
@@ -47,17 +48,51 @@ namespace Calculus
         }
         protected override Expression Add(Expression exp)
         {
-            Sum s1 = new Sum();
-            s1.Items.Add(this);
-            s1.Items.Add(exp);
-            return s1;
+            if (exp.IsProduct())
+            {
+                var common = this.FindCommon(exp);
+                if(common != null)
+                {
+                    Sum s1 = new Sum();
+                    s1.Items.Add(this.ExcludeItem(common));
+                    s1.Items.Add(exp.ExcludeItem(common));
+                    Product p1 = new Product();
+                    p1.Items.Add(s1.Simplify());
+                    p1.Items.Add(common);
+                    return p1;
+                }
+                else return this;
+            }
+            else if (exp.IsSymbol() && Items.Any(n => n == exp))
+            {
+                if(Extensions.HasNumber(this, out int index))
+                    Items[index] = Items[index] + new Number(1);
+                else
+                    Items.Add(new Number(2));
+                return this;
+            }
+            else
+            {
+                Sum s1 = new Sum();
+                s1.Items.Add(this);
+                s1.Items.Add(exp);
+                return s1;
+            }
         }
         protected override Expression Multiply(Expression exp)
         {
             if (exp.IsSum() || exp.IsProduct())
                 Items.AddRange(exp.Items);
+            else if (exp.IsNumber() && Extensions.HasNumber(this, out int index)) // Product bir sayı ile çarpılıyorsa
+                Items[index] = Items[index] * exp;
             else Items.Add(exp);
             return this;
+        }
+        public override bool IsEqual(Expression exp)
+        {
+            if (exp.IsSymbol())
+                return false;
+            else return false;
         }
     }
 }

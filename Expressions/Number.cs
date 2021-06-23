@@ -12,6 +12,7 @@ namespace Calculus
         public Number(double Value)
         {
             _value = Value;
+            IsPositive = Value > 0;
         }
         public double GetValue()
         {
@@ -43,6 +44,12 @@ namespace Calculus
             {
                 return exp * this;
             }
+        }
+        public override bool IsEqual(Expression exp)
+        {
+            if (exp.IsNumber())
+                return _value == ((Number)exp).GetValue();
+            else return false;
         }
     }
 }

@@ -56,6 +56,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Expressions\Sum.cs" />
     <Compile Include="Expressions\Symbol.cs" />
+    <Compile Include="StepLogManager\Step.cs" />
+    <Compile Include="StepLogManager\StepLogManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
