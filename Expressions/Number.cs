@@ -45,6 +45,24 @@ namespace Calculus
                 return exp * this;
             }
         }
+        protected override Expression Divide(Expression exp)
+        {
+            if (exp.IsNumber())
+                return new Number(_value / ((Number)exp).GetValue());
+            else
+            {
+                return Extensions.CreateRational(new Number(_value), exp);
+            }
+        }
+        protected override Expression Extract(Expression exp)
+        {
+            if (exp.IsNumber())
+                return new Number(_value - ((Number)exp).GetValue());
+            else
+            {
+                return exp - this;
+            }
+        }
         public override bool IsEqual(Expression exp)
         {
             if (exp.IsNumber())

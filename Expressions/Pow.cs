@@ -19,7 +19,7 @@ namespace Calculus
 
         public override string Render()
         {
-            return string.Format("{0}{1}^{2}", (IsPositive ? "" : "-"), _baseExp.Render(), _powExp.Render());
+            return string.Format("{0}{1}^{2}", (IsPositive ? "" : "-"), _baseExp.RenderWrapParantesis(), _powExp.RenderWrapParantesis());
         }
         public override Expression Simplify()
         {
@@ -39,10 +39,35 @@ namespace Calculus
         }
         protected override Expression Multiply(Expression exp)
         {
-            Product p1 = new Product();
-            p1.Items.Add(this);
-            p1.Items.Add(exp);
-            return p1;
+            if(_baseExp == Extensions.FindBase(exp))
+            {
+                if (exp.IsPow())
+                    _powExp += ((Pow)exp)._powExp;
+                else
+                    _powExp += new Number(1);
+                if (_powExp == new Number(1))
+                    return _baseExp;
+                return this;
+            }
+            return Extensions.CreateProduct(this, exp);
+        }
+        protected override Expression Divide(Expression exp)
+        {
+            if (_baseExp == Extensions.FindBase(exp))
+            {
+                if (exp.IsPow())
+                    _powExp -= ((Pow)exp)._powExp;
+                else
+                    _powExp -= new Number(1);
+                if (_powExp == new Number(1))
+                    return _baseExp;
+                return this;
+            }
+            return Extensions.CreateRational(this, exp);
+        }
+        protected override Expression Extract(Expression exp)
+        {
+            return this;
         }
         public override bool IsEqual(Expression exp)
         {

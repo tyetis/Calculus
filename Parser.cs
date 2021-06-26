@@ -16,7 +16,6 @@ namespace Calculus
 
             if (Regex.IsMatch(Expression, @"^[+-]?\{(\d+)\}$"))
             {
-                if (Expression.StartsWith("-")) IsPositiveFlag = false;
                 Match m = Regex.Match(Expression, @"^[+-]?\{(\d+)\}$");
                 if (m != null)
                 {
@@ -42,7 +41,8 @@ namespace Calculus
             for (int i = 0; i < mc_parantesis.Count; i++)
             {
                 parantesis.Add(mc_parantesis[i].Groups[1].Value);
-                Expression = Expression.Replace(mc_parantesis[i].Value, "{" + (i + _oldcount) + "}");
+                Expression = new Regex(mc_parantesis[i].Value.Replace("(", @"\(").Replace(")", @"\)").Replace("+", @"\+").Replace("*", @"\*").Replace("^", @"\^"))
+                             .Replace(Expression, "{" + (i + _oldcount) + "}", 1);
             }
 
             MatchCollection mc_sum = Regex.Matches(Expression, @"[+-]?([\w,^\/*{}]+)");

@@ -34,13 +34,7 @@ namespace Calculus
                 }
             }
 
-            Expression agg = Items.Aggregate((i, e) => i + e);
-            if (agg.IsNumber() || agg.IsProduct())
-                return agg;
-            else if (agg.IsSum())
-                this.Items = agg.Items;
-
-            return this;
+            return Items.Aggregate((i, e) => i + e).Order();
         }
         protected override Expression Add(Expression exp)
         {
@@ -73,10 +67,27 @@ namespace Calculus
             s1.Items.Add(exp);
             return s1;
         }
+        protected override Expression Divide(Expression exp)
+        {
+            if (exp.IsSum() && this == exp)
+                return new Number(1);
+            else if (exp.IsProduct())
+            {
+                var reverseDiv = exp / this;
+                if (reverseDiv.IsRational())
+                    return ((Rational)reverseDiv).ReverseDivision();
+                else return new Number(1) / reverseDiv;
+            }
+            return Extensions.CreateRational(this, exp);
+        }
+        protected override Expression Extract(Expression exp)
+        {
+            return this;
+        }
         public override string Render()
         {
             var str = string.Join("", Items.Select((n, i) => (n.IsPositive && i > 0 ? "+" : "") + n.Render()));
-            return string.Format("{0}({1})", (IsPositive ? "" : "-"), str);
+            return !IsPositive ? string.Format("-({0})", str) : str;
         }
         public override bool IsEqual(Expression exp)
         {

@@ -17,14 +17,24 @@ namespace Calculus
         public abstract bool IsEqual(Expression exp);
 
         protected abstract Expression Add(Expression exp);
+        protected abstract Expression Extract(Expression exp);
         protected abstract Expression Multiply(Expression exp);
+        protected abstract Expression Divide(Expression exp);
         public static Expression operator +(Expression exp1, Expression exp2)
         {
             return exp1.Add(exp2);
         }
+        public static Expression operator -(Expression exp1, Expression exp2)
+        {
+            return exp1.Extract(exp2);
+        }
         public static Expression operator *(Expression exp1, Expression exp2)
         {
             return exp1.Multiply(exp2);
+        }
+        public static Expression operator /(Expression exp1, Expression exp2)
+        {
+            return exp1.Divide(exp2);
         }
         public static bool operator ==(Expression exp1, Expression exp2)
         {
@@ -44,6 +54,20 @@ namespace Calculus
                 Root.Items.Remove(this);
                 Root.Items.Add(this.Items.FirstOrDefault());
             }
+        }
+        public Expression Order()
+        {
+            Items = Items.OrderBy(n => n.IsNumber() ? 0 : 1)
+                         .ThenBy(n =>
+                         {
+                             Symbol s = (Symbol)(n.IsSymbol() ? n : n.Items.FirstOrDefault(a => a.IsSymbol()));
+                             if (n != null)
+                                 return Array.IndexOf(new[] { "a", "b", "c", "x", "y", "z" }, s._name);
+                             else return 7;
+                         })
+                         .ThenBy(n => n.Items.Count)
+                         .ToList();
+            return this;
         }
         public string DebuggerDisplay
         {

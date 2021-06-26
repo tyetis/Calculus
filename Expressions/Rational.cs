@@ -19,26 +19,15 @@ namespace Calculus
 
         public override string Render()
         {
-            return string.Format("{0}{1}/{2}", (IsPositive ? "" : "-"),_rationExp.Render(), _denominatorExp.Render());
+            return string.Format("{0}{1}/{2}", (IsPositive ? "" : "-"),_rationExp.RenderWrapParantesis(), _denominatorExp.RenderWrapParantesis());
         }
         public override Expression Simplify()
         {
             //TODO: normalde sadeleştirilebiliyorsa bu işlemi yapması lazım
             _rationExp = _rationExp.Simplify();
             _denominatorExp = _denominatorExp.Simplify();
-            if (this._rationExp.IsNumber() && this._denominatorExp.IsNumber())
-                return new Number(((Number)_rationExp).GetValue() / ((Number)_denominatorExp).GetValue());
-            else if(_rationExp.IsProduct())
-            {
-                if(!_denominatorExp.IsProduct()) _denominatorExp = _denominatorExp.AsProduct();
-                var common = _rationExp.FindCommon(_denominatorExp);
-                if(common != null)
-                {
-                    _rationExp = _rationExp.ExcludeItem(common) ?? new Number(1);
-                    _denominatorExp = _denominatorExp.ExcludeItem(common) ?? new Number(1);
-                }
-            }
-            return this;
+
+            return _rationExp / _denominatorExp;
         }
         protected override Expression Add(Expression exp)
         {
@@ -49,16 +38,50 @@ namespace Calculus
         }
         protected override Expression Multiply(Expression exp)
         {
-            Product p1 = new Product();
-            p1.Items.Add(this);
-            p1.Items.Add(exp);
-            return p1;
+            if (exp.IsPow() || exp.IsSymbol())
+            {
+                _rationExp = exp * _rationExp;
+                return this;
+            }
+            if (exp.IsRational())
+            {
+                _rationExp *= ((Rational)exp)._rationExp;
+                _denominatorExp *= ((Rational)exp)._denominatorExp;
+                return this;
+            }
+            return this;
+        }
+        protected override Expression Divide(Expression exp)
+        {
+            if (exp.IsPow() || exp.IsSymbol())
+            {
+                _rationExp = exp / _rationExp;
+                return this;
+            }
+            if (exp.IsRational())
+            {
+                _rationExp /= ((Rational)exp)._rationExp;
+                _denominatorExp /= ((Rational)exp)._denominatorExp;
+                return this;
+            }
+            return this;
+        }
+        protected override Expression Extract(Expression exp)
+        {
+            return this;
         }
         public override bool IsEqual(Expression exp)
         {
             if (exp.IsSymbol())
                 return Render() == exp.Render();
             else return false;
+        }
+        public Expression ReverseDivision()
+        {
+            var _ = _rationExp;
+            _rationExp = _denominatorExp;
+            _denominatorExp = _;
+            return this;
         }
     }
 }

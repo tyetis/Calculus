@@ -10,7 +10,9 @@ namespace Calculus
     {
         static void Main(string[] args)
         {
-            string input = "(2*a)/(1*b)";
+            //string input = "-(-a*b)";
+            //string input = "-a*b*(-1)";
+            string input = "2*a*b-a";
             Expression exp = Parser.Parse(input);
 
             exp = exp.Simplify();
