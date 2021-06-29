@@ -11,29 +11,8 @@ namespace Calculus
     {
         public override Expression Simplify()
         {
-            foreach (Expression e in Items.ToList())
-            {
-                if (e.IsSum() || e.IsProduct())
-                {
-                    Expression simplified = e.Simplify();
-                    if (e.IsSingleItem())
-                    {
-                        Items.Remove(e);
-                        Items.Add(e.Items.FirstOrDefault());
-                    }
-                    else if (simplified.IsNumber())
-                    {
-                        Items.Remove(e);
-                        Items.Add(simplified);
-                    }
-                }
-                else if (e.IsPow() || e.IsRational()) //TODO: normalde sadeleştirilebiliyorsa bu işlemi yapması lazım
-                {
-                    Items.Remove(e);
-                    Items.Add(e.Simplify());
-                }
-            }
-
+            for (int i = 0; i < Items.Count; i++)
+                Items[i] = Items[i].Simplify();
             return Items.Aggregate((i, e) => i + e).Order();
         }
         protected override Expression Add(Expression exp)

@@ -16,41 +16,25 @@ namespace Calculus
         }
         public override Expression Simplify()
         {
-            foreach (Expression e in Items.ToList())
-            {
-                if (e.IsSum() || e.IsProduct())
-                {
-                    Expression simplified = e.Simplify();
-                    if (e.IsSingleItem())
-                    {
-                        Items.Remove(e);
-                        Items.Add(e.Items.FirstOrDefault());
-                    }
-                    else if (simplified.IsNumber())
-                    {
-                        Items.Remove(e);
-                        Items.Add(simplified);
-                    }
-                }
-                else if (e.IsPow() || e.IsRational()) //TODO: normalde sadeleştirilebiliyorsa bu işlemi yapması lazım
-                {
-                    Items.Remove(e);
-                    Items.Add(e.Simplify());
-                }
-            }
-
+            for (int i = 0; i < Items.Count; i++)
+                Items[i] = Items[i].Simplify();
             return Items.Aggregate((i, e) => i * e).Order();
         }
         protected override Expression Add(Expression exp)
         {
-            if (exp.IsProduct() || exp.IsSymbol())
-            {
-                var common = FindCommonFactor(exp);
-                if (common != null)
-                    return (this.ExcludeItem(common) + exp.ExcludeItem(common)) * common;
-            }
-            else if ((exp.IsSymbol() || exp.IsSum()) && IsEqualWithoutCoefficient(exp))
-                return CoefficientIncrease();
+            Product p = (Product)(exp.IsProduct() ? exp : exp.AsProduct());
+            var first = SplitCoefficient();
+            var second = p.SplitCoefficient();
+            if (first.Item2 == second.Item2)
+                return (first.Item1 + second.Item1) * first.Item2;
+            //if (exp.IsProduct() || exp.IsSymbol())
+            //{
+            //    var common = FindCommonFactor(exp);
+            //    if (common != null)
+            //        return (this.ExcludeItem(common) + exp.ExcludeItem(common)) * common;
+            //}
+            //else if ((exp.IsSymbol() || exp.IsSum()) && IsEqualWithoutCoefficient(exp))
+            //    return CoefficientIncrease();
             return Extensions.CreateSum(this, exp);
         }
         protected override Expression Multiply(Expression exp)
@@ -102,17 +86,14 @@ namespace Calculus
             }
             else return false;
         }
-        public bool IsEqualWithoutCoefficient(Expression ex)
+        public Tuple<Number, Expression> SplitCoefficient()
         {
-            return Items.Where(n => !n.IsNumber()).All(n => n == ex);
+            Number coeff = (Number)Items.FirstOrDefault(n => n.IsNumber()) ?? new Number(1);
+            return Tuple.Create<Number, Expression>(coeff, Extensions.CreateProduct(Items.Where(n => !n.IsNumber()).ToArray()));
         }
-        public Expression CoefficientIncrease()
+        public Number GetCoefficient()
         {
-            if (Extensions.HasNumber(this, out int index))
-                Items[index] = Items[index] + new Number(1);
-            else
-                Items.Add(new Number(2));
-            return this;
+            return (Number)Items.FirstOrDefault(n => n.IsNumber()) ?? new Number(1);
         }
         public Expression FindCommonFactor(Expression exp)
         {

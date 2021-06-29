@@ -25,7 +25,9 @@ namespace Calculus
         }
         protected override Expression Add(Expression exp)
         {
-            if (this == exp)
+            if (IsPositive != exp.IsPositive)
+                return Extract(exp);
+            else if (this == exp)
             {
                 if (exp.IsPositive)
                 {
@@ -34,18 +36,13 @@ namespace Calculus
                     p1.Items.Add(this);
                     return p1;
                 }
-                else 
+                else
                     return new Number(0);
             }
             else if (exp.IsSum() || exp.IsProduct())
                 return exp + this;
             else
-            {
-                Sum s1 = new Sum();
-                s1.Items.Add(this);
-                s1.Items.Add(exp);
-                return s1;
-            }
+                return Extensions.CreateSum(this, exp);
         }
         protected override Expression Multiply(Expression exp)
         {
@@ -76,15 +73,11 @@ namespace Calculus
         protected override Expression Extract(Expression exp)
         {
             if (this == exp)
-                return new Number(1);
+                return new Number(0);
+            else if (exp.IsSum() || exp.IsProduct())
+                return exp - this;
             else
-            {
-                exp.IsPositive = false;
-                Sum s1 = new Sum();
-                s1.Items.Add(this);
-                s1.Items.Add(exp);
-                return s1;
-            }
+                return Extensions.CreateSum(this, exp);
         }
         public override bool IsEqual(Expression exp)
         {

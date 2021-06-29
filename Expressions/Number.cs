@@ -12,7 +12,7 @@ namespace Calculus
         public Number(double Value)
         {
             _value = Value;
-            IsPositive = Value > 0;
+            IsPositive = Value >= 0;
         }
         public double GetValue()
         {

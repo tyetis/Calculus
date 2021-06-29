@@ -31,10 +31,15 @@ namespace Calculus
         }
         protected override Expression Add(Expression exp)
         {
-            Sum s1 = new Sum();
-            s1.Items.Add(this);
-            s1.Items.Add(exp);
-            return s1;
+            if (exp.IsRational())
+            {
+                if (_denominatorExp == ((Rational)exp)._denominatorExp)
+                {
+                    _rationExp += ((Rational)exp)._rationExp;
+                    return this;
+                }
+            }
+            return Extensions.CreateSum(this, exp);
         }
         protected override Expression Multiply(Expression exp)
         {
@@ -49,7 +54,7 @@ namespace Calculus
                 _denominatorExp *= ((Rational)exp)._denominatorExp;
                 return this;
             }
-            return this;
+            return Extensions.CreateProduct(this, exp);
         }
         protected override Expression Divide(Expression exp)
         {
@@ -60,8 +65,8 @@ namespace Calculus
             }
             if (exp.IsRational())
             {
-                _rationExp /= ((Rational)exp)._rationExp;
-                _denominatorExp /= ((Rational)exp)._denominatorExp;
+                _rationExp *= ((Rational)exp)._denominatorExp;
+                _denominatorExp *= ((Rational)exp)._rationExp;
                 return this;
             }
             return this;

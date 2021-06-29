@@ -78,6 +78,7 @@ namespace Calculus
         public static Product AsProduct(this Expression expression)
         {
             Product p1 = new Product();
+            p1.IsPositive = expression.IsPositive;
             p1.Items.Add(expression);
             return p1;
         }

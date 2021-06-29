@@ -55,16 +55,13 @@ namespace Calculus
                 Root.Items.Add(this.Items.FirstOrDefault());
             }
         }
+        public virtual Expression Factor()
+        {
+            return this;
+        }
         public Expression Order()
         {
             Items = Items.OrderBy(n => n.IsNumber() ? 0 : 1)
-                         .ThenBy(n =>
-                         {
-                             Symbol s = (Symbol)(n.IsSymbol() ? n : n.Items.FirstOrDefault(a => a.IsSymbol()));
-                             if (n != null)
-                                 return Array.IndexOf(new[] { "a", "b", "c", "x", "y", "z" }, s._name);
-                             else return 7;
-                         })
                          .ThenBy(n => n.Items.Count)
                          .ToList();
             return this;
